@@ -1,0 +1,32 @@
+a
+version: '3'
+services:
+  prometheus:
+    #restart: always
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    links:
+      - elasticsearch_exporter:elasticsearch_exporter
+  elasticsearch_exporter:
+    #restart: always
+    image: justwatch/elasticsearch_exporter:1.0.1
+    command:
+     - '-es.uri=http://elasticsearch:9200'
+     - '-es.all=true'
+    #restart: always
+    ports:
+      - 9108:9108
+    links:
+      - elasticsearch:elasticsearch
+  elasticsearch:
+    #restart: always
+    image: elasticsearch:alpine
+    container_name: elasticsearch
+    volumes:
+      - ./data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
